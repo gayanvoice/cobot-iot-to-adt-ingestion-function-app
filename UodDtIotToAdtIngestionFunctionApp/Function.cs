@@ -66,6 +66,10 @@ namespace UodDtIotToAdtIngestionFunctionApp
                             azureJsonPatchDocument.AppendAdd("/tool_output_voltage", Convert.ToInt32(eventGridDataJObject["body"]["tool_output_voltage"]));
                             azureJsonPatchDocument.AppendAdd("/tool_output_current", Convert.ToDouble(eventGridDataJObject["body"]["tool_output_current"]));
                             await digitalTwinsClient.UpdateDigitalTwinAsync("URCobot", azureJsonPatchDocument);
+                            azureJsonPatchDocument = new JsonPatchDocument();
+                            azureJsonPatchDocument.AppendAdd("/IsHumanAssigned", false);
+                            azureJsonPatchDocument.AppendAdd("/Position", PositionModel.GetPositionModel(positionToken: eventGridDataJObject["body"]["target_q"]));
+                            await digitalTwinsClient.UpdateDigitalTwinAsync("URCobotT", azureJsonPatchDocument);
                             log.LogInformation("URCobot Digital Twin Updated");
                         }
                         else if (iotHubConnectionDeviceId.Equals("RobotiqGripper"))
@@ -81,6 +85,10 @@ namespace UodDtIotToAdtIngestionFunctionApp
                             azureJsonPatchDocument.AppendAdd("/obj", Convert.ToInt32(eventGridDataJObject["body"]["obj"]));
                             azureJsonPatchDocument.AppendAdd("/flt", Convert.ToInt32(eventGridDataJObject["body"]["flt"]));
                             await digitalTwinsClient.UpdateDigitalTwinAsync("RobotiqGripper", azureJsonPatchDocument);
+                            azureJsonPatchDocument = new JsonPatchDocument();
+                            azureJsonPatchDocument.AppendAdd("/IsHumanAssigned", false);
+                            azureJsonPatchDocument.AppendAdd("/IsOpen", false);
+                            await digitalTwinsClient.UpdateDigitalTwinAsync("RobotiqGripperT", azureJsonPatchDocument);
                             log.LogInformation("RobotiqGripper Digital Twin Updated");
                         }
                     }
